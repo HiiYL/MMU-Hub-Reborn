@@ -118,8 +118,28 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
+            // Create a new Fragment to be placed in the activity layout
+            BulletinFragment firstFragment = new BulletinFragment();
+
+            // In case this activity was started with special instructions from an
+            // Intent, pass the Intent's extras to the fragment as arguments
+            firstFragment.setArguments(getIntent().getExtras());
+
+            // Add the fragment to the 'fragment_container' FrameLayout
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, firstFragment).commit();
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
+
+            // Create a new Fragment to be placed in the activity layout
+            MMLSFragment mmlsFragment = new MMLSFragment();
+
+            // In case this activity was started with special instructions from an
+            // Intent, pass the Intent's extras to the fragment as arguments
+
+            // Add the fragment to the 'fragment_container' FrameLayout
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, mmlsFragment).commit();
 
         } else if (id == R.id.nav_slideshow) {
 

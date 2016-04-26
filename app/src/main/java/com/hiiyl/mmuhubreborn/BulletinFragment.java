@@ -74,7 +74,7 @@ public class BulletinFragment extends Fragment {
                         // Add the fragment to the 'fragment_container' FrameLayout
                         getActivity().getSupportFragmentManager().beginTransaction()
                                 .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                                .replace(R.id.fragment_container, bulletinViewFragment)
+                                .add(R.id.fragment_container, bulletinViewFragment)
                                 .addToBackStack("tag").commit();
 //                        mRecycleViewAdapter.getRef(position).removeValue();
                     }
