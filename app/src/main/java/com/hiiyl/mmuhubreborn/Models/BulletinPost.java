@@ -1,11 +1,31 @@
 package com.hiiyl.mmuhubreborn.Models;
 
+import java.io.Serializable;
+
 /**
  * Created by Hii on 25/04/16.
  */
-public class BulletinPost {
-    String title, contents, author,url;
+public class BulletinPost  implements Serializable {
+    String title;
+    String contents;
+    String author;
+    String url;
+    String key;
     long datePosted, dateExpired;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public long getDateExpired() {
+        return dateExpired;
+    }
+
+
     public String getTitle() {
         return title;
     }

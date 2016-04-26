@@ -1,5 +1,6 @@
 package com.hiiyl.mmuhubreborn;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -8,74 +9,56 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 import com.firebase.client.Firebase;
-import com.firebase.ui.FirebaseRecyclerAdapter;
-import com.hiiyl.mmuhubreborn.Models.BulletinPost;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, BulletinFragment.OnFragmentInteractionListener {
 
-    private FirebaseRecyclerAdapter<BulletinPost, BulletinPostViewHolder> mAdapter;
+
+    public Firebase myFirebaseRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Firebase.setAndroidContext(this);
 
-        Firebase myFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com/");
+        myFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com/");
+
 //        myFirebaseRef.child("message").setValue("Do you have data? You'll love Firebase.");
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Check that the activity is using the layout version with
+        // the fragment_container FrameLayout
+        if (findViewById(R.id.fragment_container) != null) {
 
-//        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-//        Date d;
-//        try {
-//            d = sdf.parse("21/12/2012");
-//            BulletinPost bulletinPost = new BulletinPost("Bulletin", "Bruh...", "Dude", d);
-//            myFirebaseRef.child("bulletin_posts").push().setValue(bulletinPost);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-
-//        ListView messagesView = (ListView) findViewById(R.id.bulletin_list);
-//
-//        mAdapter = new FirebaseListAdapter<BulletinPost>(this, BulletinPost.class, android.R.layout.two_line_list_item, myFirebaseRef) {
-//            @Override
-//            protected void populateView(View view, BulletinPost bulletinPost, int position) {
-//                ((TextView)view.findViewById(android.R.id.text1)).setText(bulletinPost.getTitle());
-//                ((TextView)view.findViewById(android.R.id.text2)).setText(bulletinPost.getContents());
-//            }
-//        };
-//        messagesView.setAdapter(mAdapter);
-
-        RecyclerView recycler = (RecyclerView) findViewById(R.id.bulletin_post_recyclerview);
-        recycler.setHasFixedSize(true);
-        recycler.setLayoutManager(new LinearLayoutManager(this));
-        final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-        mAdapter = new FirebaseRecyclerAdapter<BulletinPost, BulletinPostViewHolder>(BulletinPost.class, R.layout.item_bulletin, BulletinPostViewHolder.class, myFirebaseRef.child("bulletin_posts")) {
-            @Override
-            protected void populateViewHolder(BulletinPostViewHolder bulletinPostViewHolder, BulletinPost bulletinPost, int i) {
-                bulletinPostViewHolder.titleView.setText(bulletinPost.getTitle());
-                bulletinPostViewHolder.authorView.setText(bulletinPost.getAuthor());
-
-                bulletinPostViewHolder.dateView.setText(sdf.format(new Date(bulletinPost.getDatePosted() * 1000)));
+            // However, if we're being restored from a previous state,
+            // then we don't need to do anything and should return or else
+            // we could end up with overlapping fragments.
+            if (savedInstanceState != null) {
+                return;
             }
-        };
-        recycler.setAdapter(mAdapter);
+
+            // Create a new Fragment to be placed in the activity layout
+            BulletinFragment firstFragment = new BulletinFragment();
+
+            // In case this activity was started with special instructions from an
+            // Intent, pass the Intent's extras to the fragment as arguments
+            firstFragment.setArguments(getIntent().getExtras());
+
+            // Add the fragment to the 'fragment_container' FrameLayout
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, firstFragment).commit();
+        }
+
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -154,20 +137,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mAdapter.cleanup();
+    public void onFragmentInteraction(Uri uri) {
+
     }
-    public static class BulletinPostViewHolder  extends RecyclerView.ViewHolder {
-        TextView titleView;
-        TextView authorView;
-        TextView dateView;
-        TextView contentView;
-        public BulletinPostViewHolder(View itemView) {
-            super(itemView);
-            titleView = (TextView)itemView.findViewById(R.id.title);
-            authorView = (TextView) itemView.findViewById(R.id.author);
-            dateView = (TextView) itemView.findViewById(R.id.date);
-        }
-    }
+
+
 }
