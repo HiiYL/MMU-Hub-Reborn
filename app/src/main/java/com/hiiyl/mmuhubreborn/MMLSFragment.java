@@ -24,13 +24,17 @@ import java.util.Date;
  * A simple {@link Fragment} subclass.
  */
 public class MMLSFragment extends Fragment {
-    private final Firebase weekFirebaseRef;
+    private Firebase weekFirebaseRef;
+    private String mSubjectRef = "";
+    private String mTitle = "";
     PrettyTime p = new PrettyTime();
+    private static final String ARG_PARAM1 = "bulletin_uid";
+    private static final String ARG_PARAM2 = "bulletin_uid2";
     private FirebaseRecyclerAdapter<Announcement, WeekViewHolder> mAdapter;
 
 
     public MMLSFragment() {
-        weekFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com/subjects/BFN1014/weeks/0/announcements");
+
         // Required empty public constructor
     }
 
@@ -39,11 +43,20 @@ public class MMLSFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        if (getArguments() != null) {
+            mSubjectRef = getArguments().getString(ARG_PARAM1);
+            mTitle = getArguments().getString(ARG_PARAM2);
+            Log.d("SUP", "SUP DAWG" + mSubjectRef);
+            weekFirebaseRef = new Firebase(mSubjectRef);
+        }else {
+            Log.d("SUP", "NOPE DAWG");
+            weekFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com/subjects2/260:1459119520/weeks/0/announcements");
+        }
         View rootView =  inflater.inflate(R.layout.fragment_mmls, container, false);
         RecyclerView recycler = (RecyclerView) rootView.findViewById(R.id.mmls_recyclerview);
         recycler.setHasFixedSize(true);
         recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
-//        final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+//        final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM
 
         mAdapter = new FirebaseRecyclerAdapter<Announcement, WeekViewHolder>(Announcement.class, R.layout.item_bulletin, WeekViewHolder.class, weekFirebaseRef) {
             @Override
@@ -88,6 +101,15 @@ public class MMLSFragment extends Fragment {
             authorView = (TextView) itemView.findViewById(R.id.author);
             dateView = (TextView) itemView.findViewById(R.id.date);
         }
+    }
+    public static MMLSFragment newInstance(String mSubjectRef, String mTitle) {
+        Log.d("MMLSFRAGMENT", "NEWINSTANCE");
+        MMLSFragment fragment = new MMLSFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, mSubjectRef);
+        args.putString(ARG_PARAM2, mTitle);
+        fragment.setArguments(args);
+        return fragment;
     }
 
 }

@@ -53,6 +53,7 @@ public class BulletinFragment extends Fragment {
         recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
 //        final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
+
         mAdapter = new FirebaseRecyclerAdapter<BulletinPost, BulletinPostViewHolder>(BulletinPost.class, R.layout.item_bulletin, BulletinPostViewHolder.class, bulletinFirebaseRef) {
             @Override
             protected void populateViewHolder(BulletinPostViewHolder bulletinPostViewHolder, final BulletinPost bulletinPost, final int position) {

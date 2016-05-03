@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1002041881449",
+    "project_id": "mmu-hub-reborn"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002041881449:android:be50cbc79c5502d7",
+        "android_client_info": {
+          "package_name": "com.hiiyl.mmuhubreborn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1002041881449-01eqbhuf9mte1v991ov54f0to17bshtc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hiiyl.mmuhubreborn",
+            "certificate_hash": "64EF8BDA63DE0A9AAE1CB52870EA313BAAC38A77"
+          }
+        },
+        {
+          "client_id": "1002041881449-pa08snr5uhdes8uab154lipolhoi3rko.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpEUOY0qwJpZrHdIa0THm4JvcUdXABUsE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

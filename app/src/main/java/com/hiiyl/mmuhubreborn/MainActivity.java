@@ -8,30 +8,42 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
+import com.firebase.ui.auth.core.AuthProviderType;
+import com.firebase.ui.auth.core.FirebaseLoginBaseActivity;
+import com.firebase.ui.auth.core.FirebaseLoginError;
 
-public class MainActivity extends AppCompatActivity
+import java.util.HashMap;
+import java.util.Map;
+
+public class MainActivity extends FirebaseLoginBaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, BulletinFragment.OnFragmentInteractionListener {
 
 
     public Firebase myFirebaseRef;
+    public View myView;
+    private DrawerLayout drawer;
+    private String studentID;
+    private String mmlsPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Firebase.setAndroidContext(this);
+        Firebase.getDefaultConfig().setPersistenceEnabled(true);
 
         myFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com/");
-
 //        myFirebaseRef.child("message").setValue("Do you have data? You'll love Firebase.");
         setContentView(R.layout.activity_main);
+        myView = findViewById(R.id.drawer_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -66,10 +78,12 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -77,6 +91,10 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+
+
     }
 
     @Override
@@ -132,7 +150,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_gallery) {
 
             // Create a new Fragment to be placed in the activity layout
-            MMLSFragment mmlsFragment = new MMLSFragment();
+            MMLSPagerFragment mmlsFragment = new MMLSPagerFragment();
 
             // In case this activity was started with special instructions from an
             // Intent, pass the Intent's extras to the fragment as arguments
@@ -142,6 +160,7 @@ public class MainActivity extends AppCompatActivity
                     .replace(R.id.fragment_container, mmlsFragment).commit();
 
         } else if (id == R.id.nav_slideshow) {
+            showFirebaseLoginPrompt();
 
         } else if (id == R.id.nav_manage) {
 
@@ -162,4 +181,39 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    @Override
+    protected Firebase getFirebaseRef() {
+        return myFirebaseRef;
+    }
+
+    @Override
+    protected void onFirebaseLoginProviderError(FirebaseLoginError firebaseLoginError) {
+
+    }
+
+    @Override
+    protected void onFirebaseLoginUserError(FirebaseLoginError firebaseLoginError) {
+
+    }
+    @Override
+    public void onFirebaseLoggedIn(AuthData authData) {
+        Log.d("WOW", "WOW LLOGGEDD IN");
+        Snackbar.make(myView, "Logged In As " + authData.getProviderData().get("displayName").toString(), Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("provider", authData.getProvider());
+        if(authData.getProviderData().containsKey("displayName")) {
+            map.put("displayName", authData.getProviderData().get("displayName").toString());
+        }
+
+
+//        myFirebaseRef.child("users").child(authData.getUid()).setValue(map);
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // All providers are optional! Remove any you don't want.
+        setEnabledAuthProvider(AuthProviderType.GOOGLE);
+        setEnabledAuthProvider(AuthProviderType.PASSWORD);
+    }
 }
