@@ -50,7 +50,7 @@ public class MMLSFragment extends Fragment {
             mTitle = getArguments().getString(ARG_PARAM2);
             Log.d("SUP", "SUP DAWG" + mSubjectRef);
             weekFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com").child("subjects3").child(mSubjectRef).child("announcements");
-            subjectQuery = weekFirebaseRef.orderByPriority().limitToFirst(5);
+            subjectQuery = weekFirebaseRef.orderByPriority();
 //            "https://mmu-hub.firebaseio.com/subjects2/260:1459119520/weeks/0/announcements"
 //            weekFirebaseRef = UserSingleton.getInstance().getmFirebaseRef().child("subjects2")
 //                    .child(mSubjectRef).child("weeks").limitToLast(1).getRef().child("announcements");

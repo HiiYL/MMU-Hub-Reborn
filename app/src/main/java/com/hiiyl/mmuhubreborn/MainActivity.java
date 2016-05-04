@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.DataSnapshot;
@@ -23,6 +25,8 @@ import com.firebase.ui.auth.core.AuthProviderType;
 import com.firebase.ui.auth.core.FirebaseLoginBaseActivity;
 import com.firebase.ui.auth.core.FirebaseLoginError;
 import com.hiiyl.mmuhubreborn.Models.User;
+import com.hiiyl.mmuhubreborn.Utils.CircleTransform;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +42,9 @@ public class MainActivity extends FirebaseLoginBaseActivity
     private String mmlsPassword;
 
     public User mUser;
+    private TextView studentNametxtView;
+    private TextView facultyTxtView;
+    private ImageView profileImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -210,12 +217,12 @@ public class MainActivity extends FirebaseLoginBaseActivity
         Log.d("WOW", "WOW LLOGGEDD IN");
         Snackbar.make(myView, "Logged In As " + authData.getProviderData().get("displayName").toString(), Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
-        Map<String, Object> map = new HashMap<String, Object>();
+        final Map<String, Object> map = new HashMap<String, Object>();
         map.put("provider", authData.getProvider());
         if(authData.getProviderData().containsKey("displayName")) {
             map.put("displayName", authData.getProviderData().get("displayName").toString());
         }
-        myFirebaseRef.child("users").updateChildren(map);
+        myFirebaseRef.child("users").child(authData.getUid()).updateChildren(map);
 
         myFirebaseRef.child("users").child(authData.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
@@ -226,8 +233,19 @@ public class MainActivity extends FirebaseLoginBaseActivity
                     getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
                             .replace(R.id.fragment_container, loginFragment).commit();
+                }else {
+                    studentNametxtView = (TextView) drawer.findViewById(R.id.student_name);
+                    studentNametxtView.setText(mUser.getDisplayName());
+                    facultyTxtView = (TextView) drawer.findViewById(R.id.student_faculty);
+                    facultyTxtView.setText(mUser.getFaculty());
+                    profileImageView = (ImageView) drawer.findViewById(R.id.profileImage);
+                    Picasso.with(MainActivity.this).load((String)authData.getProviderData().get("profileImageURL"))
+                            .resize(profileImageView.getWidth(), 0)
+                            .transform(new CircleTransform()).into(profileImageView);
+
+
+                    UserSingleton.getInstance().setUser(mUser);
                 }
-                UserSingleton.getInstance().setUser(mUser);
 //                Log.d("WOW", mUser.getSubjects()[0].getName());
             }
             @Override
