@@ -8,9 +8,61 @@ import java.io.Serializable;
 public class Announcement implements Serializable {
     String author;
     String contents;
+
+    public String getWeek_title() {
+        return week_title;
+    }
+
     long posted_date;
+
+    public long getPriority() {
+        return priority;
+    }
+
+    long priority;
+
+    public Announcement(String author, String contents, long posted_date, long priority, String title, String week_title, File file, long week_number) {
+        this.author = author;
+        this.contents = contents;
+        this.posted_date = posted_date;
+        this.priority = priority;
+        this.title = title;
+        this.week_title = week_title;
+        this.file = file;
+        this.week_number = week_number;
+    }
+
     String title;
+
+    public Announcement(String author, String contents, long posted_date, String title, String week_title, File file, long week_number) {
+        this.author = author;
+        this.contents = contents;
+        this.posted_date = posted_date;
+        this.title = title;
+        this.week_title = week_title;
+        this.file = file;
+        this.week_number = week_number;
+    }
+
+    String week_title;
+
+    public Announcement(String author, String contents, long posted_date, String title, File file, long week_number) {
+        this.author = author;
+        this.contents = contents;
+        this.posted_date = posted_date;
+        this.title = title;
+        this.file = file;
+        this.week_number = week_number;
+    }
+
     File file;
+
+    public long getWeek_number() {
+        return week_number;
+    }
+
+    long week_number;
+
 
     public Announcement(String contents, long posted_date, String title, File file, String author) {
         this.contents = contents;

@@ -7,9 +7,26 @@ import java.io.Serializable;
  */
 public class Subject  implements Serializable {
     String name;
+    String uri;
+
+    public Subject(String name, Announcement[] announcements, SubjectFile[] subjectFiles) {
+        this.name = name;
+        this.announcements = announcements;
+        this.subjectFiles = subjectFiles;
+    }
+
     SubjectFile[] subjectFiles;
+    Announcement[] announcements;
+
+    public Announcement[] getAnnouncements() {
+        return announcements;
+    }
+
     Week[] weeks;
 
+    public String getUri() {
+        return uri;
+    }
     public Week[] getWeeks() {
         return weeks;
     }
@@ -22,11 +39,16 @@ public class Subject  implements Serializable {
         return name;
     }
 
-
-
     public Subject(String name, SubjectFile[] subjectFiles, Week[] weeks) {
         this.name = name;
         this.subjectFiles = subjectFiles;
         this.weeks = weeks;
+    }
+    public Subject(String name, String uri) {
+        this.name = name;
+        this.uri = uri;
+    }
+    public Subject() {
+
     }
 }

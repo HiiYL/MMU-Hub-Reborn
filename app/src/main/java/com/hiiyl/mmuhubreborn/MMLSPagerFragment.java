@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.firebase.client.Firebase;
+
 public class MMLSPagerFragment extends Fragment {
     FragmentPagerAdapter adapterViewPager;
     @Override
@@ -22,6 +24,7 @@ public class MMLSPagerFragment extends Fragment {
         return root;
     }
     public static class MyAdapter extends FragmentPagerAdapter {
+        Firebase myFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com/");
         public MyAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -30,25 +33,25 @@ public class MMLSPagerFragment extends Fragment {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                   return MMLSFragment.newInstance("https://mmu-hub.firebaseio.com/subjects2/67:1459119551/weeks/0/announcements", "WOW");
+                   return MMLSFragment.newInstance("67:1459119551", "WOW");
                 case 1:
-                    return MMLSFragment.newInstance("https://mmu-hub.firebaseio.com/subjects2/260:1459119520/weeks/0/announcements", "WOW");
+                    return MMLSFragment.newInstance("260:1459119520", "WOW");
                 case 2:
-                    return MMLSFragment.newInstance("https://mmu-hub.firebaseio.com/subjects2/446:1459126723/weeks/0/announcements", "WOW");
-                case 3:
-                    return MMLSFragment.newInstance("https://mmu-hub.firebaseio.com/subjects2/260:1459119520/weeks/0/announcements", "WOW");
+                    return MMLSFragment.newInstance("446:1459126723", "WOW");
+//                case 3:
+//                    return MMLSFragment.newInstance("https://mmu-hub.firebaseio.com/subjects2/260:1459119520/weeks/0/announcements", "WOW");
             }
-            return MMLSFragment.newInstance("https://mmu-hub.firebaseio.com/subjects2/260:1459119520/weeks/0/announcements", "WOW");
+            return MMLSFragment.newInstance("67:1459119551", "WOW");
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return UserSingleton.getInstance().getUser().getSubjects().length;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return "Child Fragment " + position;
+            return UserSingleton.getInstance().getUser().getSubjects()[position].getName();
         }
 
     }

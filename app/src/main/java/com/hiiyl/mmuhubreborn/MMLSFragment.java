@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.firebase.client.Firebase;
+import com.firebase.client.Query;
 import com.firebase.ui.FirebaseRecyclerAdapter;
 import com.hiiyl.mmuhubreborn.Models.Announcement;
 
@@ -31,6 +32,7 @@ public class MMLSFragment extends Fragment {
     private static final String ARG_PARAM1 = "bulletin_uid";
     private static final String ARG_PARAM2 = "bulletin_uid2";
     private FirebaseRecyclerAdapter<Announcement, WeekViewHolder> mAdapter;
+    private Query subjectQuery;
 
 
     public MMLSFragment() {
@@ -47,7 +49,11 @@ public class MMLSFragment extends Fragment {
             mSubjectRef = getArguments().getString(ARG_PARAM1);
             mTitle = getArguments().getString(ARG_PARAM2);
             Log.d("SUP", "SUP DAWG" + mSubjectRef);
-            weekFirebaseRef = new Firebase(mSubjectRef);
+            weekFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com").child("subjects3").child(mSubjectRef).child("announcements");
+            subjectQuery = weekFirebaseRef.orderByPriority().limitToFirst(5);
+//            "https://mmu-hub.firebaseio.com/subjects2/260:1459119520/weeks/0/announcements"
+//            weekFirebaseRef = UserSingleton.getInstance().getmFirebaseRef().child("subjects2")
+//                    .child(mSubjectRef).child("weeks").limitToLast(1).getRef().child("announcements");
         }else {
             Log.d("SUP", "NOPE DAWG");
             weekFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com/subjects2/260:1459119520/weeks/0/announcements");
@@ -58,12 +64,12 @@ public class MMLSFragment extends Fragment {
         recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
 //        final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM
 
-        mAdapter = new FirebaseRecyclerAdapter<Announcement, WeekViewHolder>(Announcement.class, R.layout.item_bulletin, WeekViewHolder.class, weekFirebaseRef) {
+        mAdapter = new FirebaseRecyclerAdapter<Announcement, WeekViewHolder>(Announcement.class, R.layout.item_bulletin, WeekViewHolder.class, subjectQuery) {
             @Override
-            protected void populateViewHolder(WeekViewHolder weekViewHolder, final Announcement week, final int position) {
-                weekViewHolder.titleView.setText(week.getTitle());
-                weekViewHolder.authorView.setText(week.getAuthor());
-                weekViewHolder.dateView.setText(p.format(new Date(week.getPosted_date() * 1000)));
+            protected void populateViewHolder(WeekViewHolder weekViewHolder, final Announcement announcement, final int position) {
+                weekViewHolder.titleView.setText(announcement.getTitle());
+                weekViewHolder.authorView.setText(announcement.getAuthor());
+                weekViewHolder.dateView.setText(p.format(new Date(announcement.getPosted_date() * 1000)));
 //                weekViewHolder.authorView.setText(bulletinPost.getAuthor());
 
 //                weekViewHolder.dateView.setText(p.format(new Date(bulletinPost.getDatePosted() * 1000)));
@@ -71,19 +77,19 @@ public class MMLSFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         Log.w("WOW", "You clicked on " + position);
-//                        // Create a new Fragment to be placed in the activity layout
-//                        BulletinViewFragment bulletinViewFragment = BulletinViewFragment.newInstance();
-//
-//                        // In case this activity was started with special instructions from an
-//                        // Intent, pass the Intent's extras to the fragment as arguments
-////                        firstFragment.setArguments(getIntent().getExtras());
-//
-//                        // Add the fragment to the 'fragment_container' FrameLayout
-//                        getActivity().getSupportFragmentManager().beginTransaction()
-//                                .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-//                                .add(R.id.fragment_container, bulletinViewFragment)
-//                                .addToBackStack("tag").commit();
-//                        mRecycleViewAdapter.getRef(position).removeValue();
+                        // Create a new Fragment to be placed in the activity layout
+                        MMLSViewFragment mmlsViewFragment = MMLSViewFragment.newInstance(announcement);
+
+                        // In case this activity was started with special instructions from an
+                        // Intent, pass the Intent's extras to the fragment as arguments
+//                        firstFragment.setArguments(getIntent().getExtras());
+
+                        // Add the fragment to the 'fragment_container' FrameLayout
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                                .add(R.id.fragment_container, mmlsViewFragment)
+                                .addToBackStack("tag").commit();
+//                        mAdapter.getRef(position).removeValue();
                     }
                 });
             }

@@ -15,10 +15,14 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.firebase.client.AuthData;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.firebase.ui.auth.core.AuthProviderType;
 import com.firebase.ui.auth.core.FirebaseLoginBaseActivity;
 import com.firebase.ui.auth.core.FirebaseLoginError;
+import com.hiiyl.mmuhubreborn.Models.User;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +36,8 @@ public class MainActivity extends FirebaseLoginBaseActivity
     private DrawerLayout drawer;
     private String studentID;
     private String mmlsPassword;
+
+    public User mUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,19 +151,23 @@ public class MainActivity extends FirebaseLoginBaseActivity
 
             // Add the fragment to the 'fragment_container' FrameLayout
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, firstFragment).commit();
+                    .replace(R.id.fragment_container, firstFragment).commit();
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
+            if (mUser == null || mUser.getId() == null) {
+                showFirebaseLoginPrompt();
+            }else {
 
-            // Create a new Fragment to be placed in the activity layout
-            MMLSPagerFragment mmlsFragment = new MMLSPagerFragment();
+                // Create a new Fragment to be placed in the activity layout
+                MMLSPagerFragment mmlsFragment = new MMLSPagerFragment();
 
-            // In case this activity was started with special instructions from an
-            // Intent, pass the Intent's extras to the fragment as arguments
+                // In case this activity was started with special instructions from an
+                // Intent, pass the Intent's extras to the fragment as arguments
 
-            // Add the fragment to the 'fragment_container' FrameLayout
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, mmlsFragment).commit();
+                // Add the fragment to the 'fragment_container' FrameLayout
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, mmlsFragment).commit();
+            }
 
         } else if (id == R.id.nav_slideshow) {
             showFirebaseLoginPrompt();
@@ -196,24 +206,43 @@ public class MainActivity extends FirebaseLoginBaseActivity
 
     }
     @Override
-    public void onFirebaseLoggedIn(AuthData authData) {
+    public void onFirebaseLoggedIn(final AuthData authData) {
         Log.d("WOW", "WOW LLOGGEDD IN");
         Snackbar.make(myView, "Logged In As " + authData.getProviderData().get("displayName").toString(), Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("provider", authData.getProvider());
         if(authData.getProviderData().containsKey("displayName")) {
             map.put("displayName", authData.getProviderData().get("displayName").toString());
         }
+        myFirebaseRef.child("users").updateChildren(map);
+
+        myFirebaseRef.child("users").child(authData.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mUser = dataSnapshot.getValue(User.class);
+                if (mUser == null || mUser.getId() == null) {
+                    LoginFragment loginFragment = LoginFragment.newInstance(authData.getUid());
+                    getSupportFragmentManager().beginTransaction()
+                            .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                            .replace(R.id.fragment_container, loginFragment).commit();
+                }
+                UserSingleton.getInstance().setUser(mUser);
+//                Log.d("WOW", mUser.getSubjects()[0].getName());
+            }
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
 
 
-//        myFirebaseRef.child("users").child(authData.getUid()).setValue(map);
     }
     @Override
     protected void onStart() {
         super.onStart();
         // All providers are optional! Remove any you don't want.
         setEnabledAuthProvider(AuthProviderType.GOOGLE);
-        setEnabledAuthProvider(AuthProviderType.PASSWORD);
+//        setEnabledAuthProvider(AuthProviderType.PASSWORD);
     }
 }
