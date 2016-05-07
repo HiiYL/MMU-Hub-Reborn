@@ -97,6 +97,16 @@ public class MMLSFragment extends Fragment {
         recycler.setAdapter(mAdapter);
         return rootView;
     }
+
+    public void onDownloadBtnClicked() {
+        Log.d("PRESSED ", "PRESSED MOTHERUFCKER");
+        DownloadFragment downloadFragment = DownloadFragment.newInstance(mSubjectRef);
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                .add(R.id.fragment_container, downloadFragment)
+                .addToBackStack("tag").commit();
+    }
+
     public static class WeekViewHolder  extends RecyclerView.ViewHolder{
         TextView titleView;
         TextView authorView;

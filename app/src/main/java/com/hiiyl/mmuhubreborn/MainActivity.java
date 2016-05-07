@@ -1,7 +1,9 @@
 package com.hiiyl.mmuhubreborn;
 
+import android.support.v4.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -36,7 +38,7 @@ public class MainActivity extends FirebaseLoginBaseActivity
 
 
     public Firebase myFirebaseRef;
-    public View myView;
+    public CoordinatorLayout myView;
     private DrawerLayout drawer;
     private String studentID;
     private String mmlsPassword;
@@ -56,7 +58,7 @@ public class MainActivity extends FirebaseLoginBaseActivity
         myFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com/");
 //        myFirebaseRef.child("message").setValue("Do you have data? You'll love Firebase.");
         setContentView(R.layout.activity_main);
-        myView = findViewById(R.id.drawer_layout);
+        myView = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -86,11 +88,17 @@ public class MainActivity extends FirebaseLoginBaseActivity
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        assert fab != null;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                if ( currentFragment instanceof MMLSPagerFragment ) {
+                    Log.d("SENT", "SENT MOTHERFUCKER");
+                    ((MMLSPagerFragment)currentFragment).onDownloadBtnClicked();
+                }
 
             }
         });
@@ -173,7 +181,7 @@ public class MainActivity extends FirebaseLoginBaseActivity
 
                 // Add the fragment to the 'fragment_container' FrameLayout
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, mmlsFragment).commit();
+                        .replace(R.id.fragment_container, mmlsFragment, "MMLSPagerFragment").commit();
             }
 
         } else if (id == R.id.nav_slideshow) {
