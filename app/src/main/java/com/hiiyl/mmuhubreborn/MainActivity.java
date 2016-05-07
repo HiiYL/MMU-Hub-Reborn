@@ -92,11 +92,8 @@ public class MainActivity extends FirebaseLoginBaseActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
                 Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
                 if ( currentFragment instanceof MMLSPagerFragment ) {
-                    Log.d("SENT", "SENT MOTHERFUCKER");
                     ((MMLSPagerFragment)currentFragment).onDownloadBtnClicked();
                 }
 
