@@ -38,7 +38,6 @@ public class BulletinViewFragment extends Fragment {
         if (getArguments() != null) {
             mBulletinPost = (BulletinPost) getArguments().getSerializable(ARG_PARAM1);
         }
-//        bulletinFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com/bulletin_posts");
 
 
     }

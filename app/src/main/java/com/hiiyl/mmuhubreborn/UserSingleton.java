@@ -10,7 +10,7 @@ public class UserSingleton {
     private static UserSingleton singleton = new UserSingleton( );
     private UserSingleton(){ }
     private User mUser;
-    private Firebase mFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com/");
+    private Firebase mFirebaseRef = new Firebase("https://mmu-hub-14826.firebaseio.com/");
 
     public static UserSingleton getInstance( ) {
         return singleton;

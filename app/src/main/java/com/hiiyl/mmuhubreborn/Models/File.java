@@ -5,6 +5,15 @@ package com.hiiyl.mmuhubreborn.Models;
  */
 public class File {
     String content_id;
+    String uid;
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public String getContent_type() {
         return content_type;

@@ -12,9 +12,18 @@ public class User {
     String id;
 
 
-
+    String uid;
     String name;
     String faculty;
+
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public String getId() {
         return id;

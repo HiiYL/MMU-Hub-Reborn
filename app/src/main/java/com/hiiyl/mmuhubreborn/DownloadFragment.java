@@ -13,19 +13,22 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.firebase.client.Firebase;
-import com.firebase.client.Query;
-import com.firebase.ui.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.hiiyl.mmuhubreborn.Helpers.FileOpen;
+import com.hiiyl.mmuhubreborn.Models.Subject;
 import com.hiiyl.mmuhubreborn.Models.SubjectFile;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
-import com.koushikdutta.ion.ProgressCallback;
 import com.squareup.picasso.Picasso;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 
@@ -39,15 +42,16 @@ public class DownloadFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private static Firebase subjectFilesFirebaseRef;
 
     PrettyTime p = new PrettyTime();
 
     // TODO: Rename and change types of parameters
     private String mSubjectRef;
+    private String mSubjectName;
     private String mParam2;
     private FirebaseRecyclerAdapter<SubjectFile, SubjectFilesViewHolder> mAdapter;
-    private Query subjectFilesQuery;
+    private DatabaseReference subjectFilesFirebaseRef;
+    private com.google.firebase.database.Query subjectFilesQuery;
 //    private FirebaseRecyclerAdapter<Announcement, WeekViewHolder> mAdapter;
 
 
@@ -76,8 +80,21 @@ public class DownloadFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mSubjectRef = getArguments().getString(ARG_PARAM1);
-            subjectFilesFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com").child("subjects3").child(mSubjectRef).child("subject_files");
+            subjectFilesFirebaseRef = FirebaseDatabase.getInstance().getReference().child(mSubjectRef).child("subject_files");
             subjectFilesQuery = subjectFilesFirebaseRef.orderByChild("priority");
+
+            boolean found = false;
+            for (Subject subject : UserSingleton.getInstance().getUser().getSubjects()) {
+                if (subject.getUri() == mSubjectRef ) {
+                    mSubjectName = subject.getName();
+                    found = true;
+                    break;
+                }
+            }
+            if(!found) {
+                Log.e("DOWNLOADFRAG", "SUBJECT NAME NOT FOUND");
+            }
+
 //            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
@@ -90,7 +107,7 @@ public class DownloadFragment extends Fragment {
         RecyclerView recycler = (RecyclerView) root.findViewById(R.id.mmls_recyclerview);
         recycler.setHasFixedSize(true);
         recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mAdapter = new FirebaseRecyclerAdapter<SubjectFile, SubjectFilesViewHolder>(SubjectFile.class, R.layout.item_file_download, SubjectFilesViewHolder.class, subjectFilesQuery) {
+        mAdapter = new FirebaseRecyclerAdapter<SubjectFile, SubjectFilesViewHolder>(SubjectFile.class, 5, SubjectFilesViewHolder.class, subjectFilesFirebaseRef) {
             @Override
             protected void populateViewHolder(final SubjectFilesViewHolder subjectFilesViewHolder, final SubjectFile subjectFile, final int position) {
                 subjectFilesViewHolder.titleView.setText(subjectFile.getTitle());
@@ -105,41 +122,40 @@ public class DownloadFragment extends Fragment {
                 subjectFilesViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        String file_name = "76175_MOCK MEETING SCHEDULE_TRI3_1516.xls";
+                        String file_directory = getActivity().getExternalFilesDir(null) + "/" + mSubjectName + "/";
+                        String file_path = file_directory + file_name;
+                        Log.d("FILE NAME", file_name);
+                        Log.d("FILE PATH", file_path);
+                        File file = new File(file_path);
+                        if(file.exists()) {
+                            try {
+                                FileOpen.openFile(getActivity(), file);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }else {
+                            File temp = new File(file_directory);
+                            Log.e("MKDIRS", String.valueOf(temp.mkdirs()));
+
+                            Log.d("ION", "STARTING");
+                            Ion.with(getContext())
+                                    .load("https://mmls.mmu.edu.my/form-download-content")
+                                    .addHeader("Cookie","laravel_session=eyJpdiI6InZLeWI3RERKQlpIWFVWUDZhXC9lZ09RPT0iLCJ2YWx1ZSI6IlhBYTVNbDlzQnJmMGxiM0drdDlzd1Y1NmZ5ZlJKa1wvR0N3Qk9ZVjdkcWlkSEhRZmZEUFR1NXNsQk5wTlhvSkIzcTZYa1ZiZkdudHlSMnBCVFhhd3N4UT09IiwibWFjIjoiNDUzMWRhZDBiYmZlZGQ5YzBiNjc1OTY5MzZlMWVhMWI5NmExN2RlZDUyYzllYTdmODY1MTcwY2QwMTZiOWMzMyJ9")
+                                    .setBodyParameter("content_id", "76175")
+                                    .setBodyParameter("file_name", "76175_MOCK MEETING SCHEDULE_TRI3_1516.xls")
+                                    .setBodyParameter("file_path", "CYBER/PWC1010/announcement")
+                                    .write(file)
+                                    .setCallback(new FutureCallback<File>() {
+                                        @Override
+                                        public void onCompleted(Exception e, File result) {
+                                            if ( e == null) {
+                                                Toast.makeText(getActivity(), "DONE M8", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                        }
                         Log.w("WOW", "You clicked on " + position);
-                        Ion.with(getActivity())
-                                .load("https://mmls.mmu.edu.my/form-download-content")
-
-                                .setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-                                .setHeader("Origin", "https://mmls.mmu.edu.my")
-                                .setHeader("Upgrade-Insecure-Requests", "bar")
-                                .setHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.94 Safari/537.36")
-                                .setHeader("Content-Type", "multipart/form-data; boundary=----WebKitFormBoundaryfomf9w6BTATWJ6eO")
-                                .setHeader("Referer", "https://mmls.mmu.edu.my/67:1459119551")
-                                .setHeader("Accept-Encoding", "gzip, deflate")
-                                .setHeader("Accept-Language", "en-GB,en-US;q=0.8,en;q=0.6")
-                                .setHeader("Cookie", "laravel_session=eyJpdiI6IlFKWitOVXJ4am9uMzVjTVl4clwvbkNnPT0i" +
-                                        "LCJ2YWx1ZSI6IlR4aUdaR2dcL1paQ3VkRVdrTFZjdk90UWdROXpNY0l6TEVwa200N0oxYzlBcXdZK2h1aldmMnJ6cVM0dzNPeDJMb2ltNHlsTEFGd2VjME1nRHZEXC8wZGc9PSIsIm1hYyI6IjhlNDBhNzE3MjA0ODU2Mjk3MmZkYjg5ZWJmZGY0ZjU0YTE4OGMyOWM3OGZiN2Q4Yzg2ZDc4MDU0NGVhN2E2ZWQifQ%3D%3D")
-                                .setBodyParameter("_token", "kWjAig2mWpw4R18MNWHFNBfe9njumNMApGUASxJr")
-                                .setBodyParameter("btnsubmit", "76175_MOCK MEETING SCHEDULE_TRI3_1516.xls")
-                                .setBodyParameter("content_id", "76175")
-                                .setBodyParameter("file_name", "76175_MOCK MEETING SCHEDULE_TRI3_1516.xls")
-                                .setBodyParameter("file_path", "CYBER/PWC1010/announcement")
-                                .progressBar(subjectFilesViewHolder.progressBar)
-                                // can also use a custom callback
-                                .progress(new ProgressCallback() {
-                                    @Override
-                                    public void onProgress(long downloaded, long total) {
-
-                                    }
-                                })
-                                .write(new File("/sdcard/really-big-file.zip"))
-                                .setCallback(new FutureCallback<File>() {
-                                    @Override
-                                    public void onCompleted(Exception e, File file) {
-                                        // download done...
-                                        // do stuff with the File or error
-                                    }
-                                });
                     }
                 });
             }

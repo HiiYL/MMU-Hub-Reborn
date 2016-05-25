@@ -13,7 +13,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.firebase.client.Firebase;
-import com.firebase.ui.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.hiiyl.mmuhubreborn.Models.BulletinPost;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -29,6 +31,7 @@ public class BulletinFragment extends Fragment {
     private FirebaseRecyclerAdapter<BulletinPost, BulletinPostViewHolder> mAdapter;
 
     private OnFragmentInteractionListener mListener;
+    private DatabaseReference mRef;
 
     public BulletinFragment() {
         // Required empty public constructor
@@ -38,7 +41,7 @@ public class BulletinFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bulletinFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com/bulletin_posts");
+        bulletinFirebaseRef = new Firebase("https://mmu-hub-14826.firebaseio.com/bulletin_posts");
 
 
     }
@@ -53,8 +56,10 @@ public class BulletinFragment extends Fragment {
         recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
 //        final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
+        mRef = FirebaseDatabase.getInstance().getReference().child("bulletin_posts");
 
-        mAdapter = new FirebaseRecyclerAdapter<BulletinPost, BulletinPostViewHolder>(BulletinPost.class, R.layout.item_bulletin, BulletinPostViewHolder.class, bulletinFirebaseRef) {
+        mAdapter = new FirebaseRecyclerAdapter<BulletinPost, BulletinPostViewHolder>(BulletinPost.class, R.layout.item_bulletin, BulletinPostViewHolder.class, mRef) {
+
             @Override
             protected void populateViewHolder(BulletinPostViewHolder bulletinPostViewHolder, final BulletinPost bulletinPost, final int position) {
                 bulletinPostViewHolder.titleView.setText(bulletinPost.getTitle());
@@ -64,7 +69,7 @@ public class BulletinFragment extends Fragment {
                 bulletinPostViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.w("WOW", "You clicked on "+position);
+                        Log.w("WOW", "You clicked on " + position);
                         // Create a new Fragment to be placed in the activity layout
                         BulletinViewFragment bulletinViewFragment = BulletinViewFragment.newInstance(bulletinPost);
 

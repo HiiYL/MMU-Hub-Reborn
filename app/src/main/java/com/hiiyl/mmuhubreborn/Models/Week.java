@@ -8,6 +8,15 @@ import java.io.Serializable;
 public class Week implements Serializable {
     String title;
     Announcement[] announcements;
+    String uid;
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public Announcement[] getAnnouncements() {
         return announcements;

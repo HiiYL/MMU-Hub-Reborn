@@ -1,19 +1,21 @@
 {
   "project_info": {
-    "project_number": "1002041881449",
-    "project_id": "mmu-hub-reborn"
+    "project_number": "433560997122",
+    "firebase_url": "https://mmu-hub-14826.firebaseio.com",
+    "project_id": "mmu-hub-14826",
+    "storage_bucket": "mmu-hub-14826.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1002041881449:android:be50cbc79c5502d7",
+        "mobilesdk_app_id": "1:433560997122:android:be50cbc79c5502d7",
         "android_client_info": {
           "package_name": "com.hiiyl.mmuhubreborn"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1002041881449-01eqbhuf9mte1v991ov54f0to17bshtc.apps.googleusercontent.com",
+          "client_id": "433560997122-faksadba8jp94akbf9cmaf244ceb5ao6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.hiiyl.mmuhubreborn",
@@ -21,13 +23,13 @@
           }
         },
         {
-          "client_id": "1002041881449-pa08snr5uhdes8uab154lipolhoi3rko.apps.googleusercontent.com",
+          "client_id": "433560997122-71efb703gjsb677ljcv6htf7kl8a2i0q.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCpEUOY0qwJpZrHdIa0THm4JvcUdXABUsE"
+          "current_key": "AIzaSyAr_Fko9xuKArBCX1fZkT_Q8flCRDJeW4A"
         }
       ],
       "services": {
@@ -35,11 +37,16 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "433560997122-71efb703gjsb677ljcv6htf7kl8a2i0q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

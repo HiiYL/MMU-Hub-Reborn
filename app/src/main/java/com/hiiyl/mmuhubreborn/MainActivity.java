@@ -1,42 +1,35 @@
 package com.hiiyl.mmuhubreborn;
 
-import android.support.v4.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.firebase.client.AuthData;
-import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
-import com.firebase.ui.auth.core.AuthProviderType;
-import com.firebase.ui.auth.core.FirebaseLoginBaseActivity;
-import com.firebase.ui.auth.core.FirebaseLoginError;
+import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
 import com.hiiyl.mmuhubreborn.Models.User;
 import com.hiiyl.mmuhubreborn.Utils.CircleTransform;
 import com.squareup.picasso.Picasso;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class MainActivity extends FirebaseLoginBaseActivity
+public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, BulletinFragment.OnFragmentInteractionListener {
 
 
+    private static final int RC_SIGN_IN = 97;
     public Firebase myFirebaseRef;
     public CoordinatorLayout myView;
     private DrawerLayout drawer;
@@ -47,15 +40,18 @@ public class MainActivity extends FirebaseLoginBaseActivity
     private TextView studentNametxtView;
     private TextView facultyTxtView;
     private ImageView profileImageView;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+
         Firebase.setAndroidContext(this);
         Firebase.getDefaultConfig().setPersistenceEnabled(true);
 
-        myFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com/");
+        myFirebaseRef = new Firebase("https://mmu-hub-14826.firebaseio.com/");
 //        myFirebaseRef.child("message").setValue("Do you have data? You'll love Firebase.");
         setContentView(R.layout.activity_main);
         myView = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
@@ -92,6 +88,11 @@ public class MainActivity extends FirebaseLoginBaseActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                profileImageView = (ImageView) drawer.findViewById(R.id.profileImage);
+                if(profileImageView != null ) {
+                    Picasso.with(MainActivity.this).load(auth.getCurrentUser().getPhotoUrl())
+                            .transform(new CircleTransform()).into(profileImageView);
+                }
                 Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
                 if ( currentFragment instanceof MMLSPagerFragment ) {
                     ((MMLSPagerFragment)currentFragment).onDownloadBtnClicked();
@@ -109,6 +110,26 @@ public class MainActivity extends FirebaseLoginBaseActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() != null) {
+//            studentNametxtView = (TextView) drawer.findViewById(R.id.student_name);
+//            studentNametxtView.setText(mUser.getDisplayName());
+//            facultyTxtView = (TextView) drawer.findViewById(R.id.student_faculty);
+//            facultyTxtView.setText(mUser.getFaculty());
+
+            Snackbar.make(myView, "Logged In As " + auth.getCurrentUser().getDisplayName(), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        } else {
+            startActivityForResult(
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setProviders(
+                                    AuthUI.GOOGLE_PROVIDER)
+                            .build(),
+                    RC_SIGN_IN);
+            // not signed in
+        }
 
 
 
@@ -167,7 +188,7 @@ public class MainActivity extends FirebaseLoginBaseActivity
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
             if (mUser == null || mUser.getId() == null) {
-                showFirebaseLoginPrompt();
+
             }else {
 
                 // Create a new Fragment to be placed in the activity layout
@@ -182,7 +203,15 @@ public class MainActivity extends FirebaseLoginBaseActivity
             }
 
         } else if (id == R.id.nav_slideshow) {
-            showFirebaseLoginPrompt();
+            startActivityForResult(
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setProviders(
+                                    AuthUI.EMAIL_PROVIDER,
+                                    AuthUI.GOOGLE_PROVIDER,
+                                    AuthUI.FACEBOOK_PROVIDER)
+                            .build(),
+                    RC_SIGN_IN);
 
         } else if (id == R.id.nav_manage) {
 
@@ -203,69 +232,69 @@ public class MainActivity extends FirebaseLoginBaseActivity
     }
 
 
-    @Override
-    protected Firebase getFirebaseRef() {
-        return myFirebaseRef;
-    }
-
-    @Override
-    protected void onFirebaseLoginProviderError(FirebaseLoginError firebaseLoginError) {
-
-    }
-
-    @Override
-    protected void onFirebaseLoginUserError(FirebaseLoginError firebaseLoginError) {
-
-    }
-    @Override
-    public void onFirebaseLoggedIn(final AuthData authData) {
-        Log.d("WOW", "WOW LLOGGEDD IN");
-        Snackbar.make(myView, "Logged In As " + authData.getProviderData().get("displayName").toString(), Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
-        final Map<String, Object> map = new HashMap<String, Object>();
-        map.put("provider", authData.getProvider());
-        if(authData.getProviderData().containsKey("displayName")) {
-            map.put("displayName", authData.getProviderData().get("displayName").toString());
-        }
-        myFirebaseRef.child("users").child(authData.getUid()).updateChildren(map);
-
-        myFirebaseRef.child("users").child(authData.getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mUser = dataSnapshot.getValue(User.class);
-                if (mUser == null || mUser.getId() == null) {
-                    LoginFragment loginFragment = LoginFragment.newInstance(authData.getUid());
-                    getSupportFragmentManager().beginTransaction()
-                            .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                            .replace(R.id.fragment_container, loginFragment).commit();
-                }else {
-                    studentNametxtView = (TextView) drawer.findViewById(R.id.student_name);
-                    studentNametxtView.setText(mUser.getDisplayName());
-                    facultyTxtView = (TextView) drawer.findViewById(R.id.student_faculty);
-                    facultyTxtView.setText(mUser.getFaculty());
-                    profileImageView = (ImageView) drawer.findViewById(R.id.profileImage);
-                    Picasso.with(MainActivity.this).load((String)authData.getProviderData().get("profileImageURL"))
-                            .resize(profileImageView.getWidth(), 0)
-                            .transform(new CircleTransform()).into(profileImageView);
-
-
-                    UserSingleton.getInstance().setUser(mUser);
-                }
-//                Log.d("WOW", mUser.getSubjects()[0].getName());
-            }
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-
-
-    }
+//    @Override
+//    protected Firebase getFirebaseRef() {
+//        return myFirebaseRef;
+//    }
+//
+//    @Override
+//    protected void onFirebaseLoginProviderError(FirebaseLoginError firebaseLoginError) {
+//
+//    }
+//
+//    @Override
+//    protected void onFirebaseLoginUserError(FirebaseLoginError firebaseLoginError) {
+//
+//    }
+//    @Override
+//    public void onFirebaseLoggedIn(final AuthData authData) {
+//        Log.d("WOW", "WOW LLOGGEDD IN");
+//        Snackbar.make(myView, "Logged In As " + authData.getProviderData().get("displayName").toString(), Snackbar.LENGTH_LONG)
+//                .setAction("Action", null).show();
+//        final Map<String, Object> map = new HashMap<String, Object>();
+//        map.put("provider", authData.getProvider());
+//        if(authData.getProviderData().containsKey("displayName")) {
+//            map.put("displayName", authData.getProviderData().get("displayName").toString());
+//        }
+//        myFirebaseRef.child("users").child(authData.getUid()).updateChildren(map);
+//
+//        myFirebaseRef.child("users").child(authData.getUid()).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                mUser = dataSnapshot.getValue(User.class);
+//                if (mUser == null || mUser.getId() == null) {
+//                    LoginFragment loginFragment = LoginFragment.newInstance(authData.getUid());
+//                    getSupportFragmentManager().beginTransaction()
+//                            .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+//                            .replace(R.id.fragment_container, loginFragment).commit();
+//                }else {
+//                    studentNametxtView = (TextView) drawer.findViewById(R.id.student_name);
+//                    studentNametxtView.setText(mUser.getDisplayName());
+//                    facultyTxtView = (TextView) drawer.findViewById(R.id.student_faculty);
+//                    facultyTxtView.setText(mUser.getFaculty());
+//                    profileImageView = (ImageView) drawer.findViewById(R.id.profileImage);
+//                    Picasso.with(MainActivity.this).load((String)authData.getProviderData().get("profileImageURL"))
+//                            .resize(profileImageView.getWidth(), 0)
+//                            .transform(new CircleTransform()).into(profileImageView);
+//
+//
+//                    UserSingleton.getInstance().setUser(mUser);
+//                }
+////                Log.d("WOW", mUser.getSubjects()[0].getName());
+//            }
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//
+//            }
+//        });
+//
+//
+//    }
     @Override
     protected void onStart() {
         super.onStart();
         // All providers are optional! Remove any you don't want.
-        setEnabledAuthProvider(AuthProviderType.GOOGLE);
+//        setEnabledAuthProvider(AuthProviderType.GOOGLE);
 //        setEnabledAuthProvider(AuthProviderType.PASSWORD);
     }
 }

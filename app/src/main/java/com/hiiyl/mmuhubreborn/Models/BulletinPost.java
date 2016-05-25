@@ -10,8 +10,29 @@ public class BulletinPost  implements Serializable {
     String contents;
     String author;
     String url;
+
     String key;
     long datePosted, dateExpired;
+    String uid;
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public BulletinPost(String title, String contents, String author, String url, String key, long datePosted, long dateExpired, String uid) {
+        this.title = title;
+        this.contents = contents;
+        this.author = author;
+        this.url = url;
+        this.key = key;
+        this.datePosted = datePosted;
+        this.dateExpired = dateExpired;
+        this.uid = uid;
+    }
 
     public String getUrl() {
         return url;

@@ -11,9 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.firebase.client.Firebase;
-import com.firebase.client.Query;
-import com.firebase.ui.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.hiiyl.mmuhubreborn.Models.Announcement;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -25,14 +25,14 @@ import java.util.Date;
  * A simple {@link Fragment} subclass.
  */
 public class MMLSFragment extends Fragment {
-    private Firebase weekFirebaseRef;
     private String mSubjectRef = "";
     private String mTitle = "";
     PrettyTime p = new PrettyTime();
     private static final String ARG_PARAM1 = "bulletin_uid";
     private static final String ARG_PARAM2 = "bulletin_uid2";
     private FirebaseRecyclerAdapter<Announcement, WeekViewHolder> mAdapter;
-    private Query subjectQuery;
+    private DatabaseReference weekFirebaseRef;
+    private com.google.firebase.database.Query subjectQuery;
 
 
     public MMLSFragment() {
@@ -49,21 +49,14 @@ public class MMLSFragment extends Fragment {
             mSubjectRef = getArguments().getString(ARG_PARAM1);
             mTitle = getArguments().getString(ARG_PARAM2);
             Log.d("SUP", "SUP DAWG" + mSubjectRef);
-            weekFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com").child("subjects3").child(mSubjectRef).child("announcements");
+            weekFirebaseRef = FirebaseDatabase.getInstance().getReference().child("subjects3").child(mSubjectRef).child("announcements");
             subjectQuery = weekFirebaseRef.orderByPriority();
-//            "https://mmu-hub.firebaseio.com/subjects2/260:1459119520/weeks/0/announcements"
-//            weekFirebaseRef = UserSingleton.getInstance().getmFirebaseRef().child("subjects2")
-//                    .child(mSubjectRef).child("weeks").limitToLast(1).getRef().child("announcements");
-        }else {
-            Log.d("SUP", "NOPE DAWG");
-            weekFirebaseRef = new Firebase("https://mmu-hub.firebaseio.com/subjects2/260:1459119520/weeks/0/announcements");
         }
         View rootView =  inflater.inflate(R.layout.fragment_mmls, container, false);
         RecyclerView recycler = (RecyclerView) rootView.findViewById(R.id.mmls_recyclerview);
         recycler.setHasFixedSize(true);
         recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
 //        final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM
-
         mAdapter = new FirebaseRecyclerAdapter<Announcement, WeekViewHolder>(Announcement.class, R.layout.item_bulletin, WeekViewHolder.class, subjectQuery) {
             @Override
             protected void populateViewHolder(WeekViewHolder weekViewHolder, final Announcement announcement, final int position) {

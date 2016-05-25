@@ -8,6 +8,15 @@ import java.io.Serializable;
 public class Subject  implements Serializable {
     String name;
     String uri;
+    String uid;
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public Subject(String name, Announcement[] announcements, SubjectFile[] subjectFiles) {
         this.name = name;

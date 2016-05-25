@@ -20,7 +20,15 @@ public class SubjectFile implements Serializable {
     long priority;
     String title;
     String token;
+    String uid;
 
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public String getContent_type() {
         return content_type;
