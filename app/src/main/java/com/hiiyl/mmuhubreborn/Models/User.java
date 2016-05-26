@@ -2,20 +2,32 @@ package com.hiiyl.mmuhubreborn.Models;
 
 import android.util.Log;
 
+import java.util.List;
+
 /**
  * Created by Hii on 04/05/16.
  */
 public class User {
     String displayName;
-    String provider;
-    Subject[] subjects;
-    String id;
-
-
     String uid;
+    String id;
     String name;
     String faculty;
+    String password;
 
+    List<Subject> subjects;
+
+
+    public User(String uid, String id, String name, String faculty, String password, List<Subject> subjects, String displayName) {
+        this.uid = uid;
+        this.id = id;
+        this.name = name;
+        this.faculty = faculty;
+        this.password = password;
+        this.subjects = subjects;
+        this.displayName = displayName;
+        Log.d("SUBJECTS", "ADDING SUBJECTS");
+    }
 
     public String getUid() {
         return uid;
@@ -23,10 +35,6 @@ public class User {
 
     public void setUid(String uid) {
         this.uid = uid;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getName() {
@@ -41,52 +49,46 @@ public class User {
         return faculty;
     }
 
-    String password;
 
-    public User(String displayName, String provider, Subject[] subjects, String id, String name, String password, String faculty) {
-        this.displayName = displayName;
-        this.provider = provider;
-        this.subjects = subjects;
-        Log.d("SUBJECTS", "SUBJECT ASSIGNED");
-        this.id = id;
-        this.name = name;
-        this.password = password;
-        this.faculty = faculty;
-    }
-    public User(String displayName, String provider, Subject[] subjects) {
-        Log.d("SUBJECTS", "SUBJECT NOT ASSIGNED");
-        this.displayName = displayName;
-        this.provider = provider;
-        this.subjects = subjects;
-    }
-    public User(String faculty, String name, String id, String password, Subject[] subjects) {
-        this.faculty = faculty;
-        this.name = name;
-        this.id = id;
-        this.password = password;
-        this.subjects = subjects;
-    }
 
 
     public User() {
         Log.d("SUBJECTS", "SUBJECT NOT ASSIGNED2");
     }
 
-    public User(String displayName, String provider) {
-        Log.d("SUBJECTS", "SUBJECT NOT ASSIGNED3");
-        this.displayName = displayName;
-        this.provider = provider;
-    }
-    public String getProvider() {
-        return provider;
-    }
 
     public String getDisplayName() {
         return displayName;
     }
-    public Subject[] getSubjects() {
+    public List<Subject> getSubjects() {
         return subjects;
     }
 
+    public String getId() {
+        return id;
+    }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public void setSubjects(List<Subject> subjects) {
+        this.subjects = subjects;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setFaculty(String faculty) {
+        this.faculty = faculty;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

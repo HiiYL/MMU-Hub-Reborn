@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.firebase.client.Firebase;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -24,9 +24,6 @@ import java.util.Date;
 
 public class BulletinFragment extends Fragment {
     PrettyTime p = new PrettyTime();
-
-
-    private Firebase  bulletinFirebaseRef;
 
     private FirebaseRecyclerAdapter<BulletinPost, BulletinPostViewHolder> mAdapter;
 
@@ -41,7 +38,6 @@ public class BulletinFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bulletinFirebaseRef = new Firebase("https://mmu-hub-14826.firebaseio.com/bulletin_posts");
 
 
     }
@@ -76,13 +72,13 @@ public class BulletinFragment extends Fragment {
                         // In case this activity was started with special instructions from an
                         // Intent, pass the Intent's extras to the fragment as arguments
 //                        firstFragment.setArguments(getIntent().getExtras());
+//                        showEditDialog(bulletinPost);
 
                         // Add the fragment to the 'fragment_container' FrameLayout
                         getActivity().getSupportFragmentManager().beginTransaction()
                                 .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
                                 .add(R.id.fragment_container, bulletinViewFragment)
                                 .addToBackStack("tag").commit();
-//                        mRecycleViewAdapter.getRef(position).removeValue();
                     }
                 });
             }
@@ -91,8 +87,12 @@ public class BulletinFragment extends Fragment {
 
         return rootView;
     }
+    private void showEditDialog(BulletinPost bulletinPost) {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        BulletinViewFragment bulletinViewFragment = BulletinViewFragment.newInstance(bulletinPost);
+        bulletinViewFragment.show(fm, "fragment_edit_name");
+    }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);

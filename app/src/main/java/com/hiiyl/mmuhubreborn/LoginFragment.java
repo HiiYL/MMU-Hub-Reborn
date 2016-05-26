@@ -24,9 +24,9 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.hiiyl.mmuhubreborn.Models.User;
 
 import java.util.HashMap;
@@ -80,7 +80,7 @@ public class LoginFragment extends Fragment {
                         // Intent, pass the Intent's extras to the fragment as arguments
 
                         // Add the fragment to the 'fragment_container' FrameLayout
-                        UserSingleton.getInstance().getmFirebaseRef().child("users").child(authUid)
+                        UserSingleton.getInstance().getmFirebaseDatabase().child("users").child(authUid)
                                 .addValueEventListener(new ValueEventListener() {
                               @Override
                               public void onDataChange(DataSnapshot dataSnapshot) {
@@ -90,10 +90,10 @@ public class LoginFragment extends Fragment {
                                           .replace(R.id.fragment_container, mmlsFragment).commit();
                               }
 
-                              @Override
-                              public void onCancelled(FirebaseError firebaseError) {
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
 
-                              }
+                                }
                           });
 
 //                        mPostCommentResponse.requestCompleted();

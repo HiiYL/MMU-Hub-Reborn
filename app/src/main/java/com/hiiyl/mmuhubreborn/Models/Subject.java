@@ -24,6 +24,12 @@ public class Subject  implements Serializable {
         this.subjectFiles = subjectFiles;
     }
 
+    public Subject(String name, String uri, String uid) {
+        this.name = name;
+        this.uri = uri;
+        this.uid = uid;
+    }
+
     SubjectFile[] subjectFiles;
     Announcement[] announcements;
 

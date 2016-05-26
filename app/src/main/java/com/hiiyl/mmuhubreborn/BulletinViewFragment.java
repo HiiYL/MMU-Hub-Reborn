@@ -2,20 +2,20 @@ package com.hiiyl.mmuhubreborn;
 
 
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 
-import com.firebase.client.Firebase;
 import com.hiiyl.mmuhubreborn.Models.BulletinPost;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BulletinViewFragment extends Fragment {
+public class BulletinViewFragment extends DialogFragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -23,7 +23,6 @@ public class BulletinViewFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
     private BulletinPost mBulletinPost;
-    private Firebase bulletinFirebaseRef;
 
     WebView webview;
 

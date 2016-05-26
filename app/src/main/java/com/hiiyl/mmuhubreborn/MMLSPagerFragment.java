@@ -1,21 +1,22 @@
 package com.hiiyl.mmuhubreborn;
 
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.firebase.client.Firebase;
-
 public class MMLSPagerFragment extends Fragment {
     MyAdapter adapter;
     private ViewPager viewPager;
+    private TabLayout tabLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -26,10 +27,20 @@ public class MMLSPagerFragment extends Fragment {
         /** Important: Must use the child FragmentManager or you will see side effects. */
         adapter = new MyAdapter(getChildFragmentManager());
         viewPager.setAdapter(adapter);
+
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("WOW");
+
+//        getActivity().getActionBar().setDisplayShowTitleEnabled(false);
+
+
+        // Give the TabLayout the ViewPager
+        tabLayout = (TabLayout) getActivity().findViewById(R.id.tabLayout);
+//        TabLayout tabLayout = (TabLayout) root.findViewById(R.id.sliding_tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
         return root;
     }
     public static class MyAdapter extends FragmentPagerAdapter {
-        Firebase myFirebaseRef = new Firebase("https://mmu-hub-14826.firebaseio.com/");
         SparseArray tagMap = new SparseArray();
         public MyAdapter(FragmentManager fm) {
             super(fm);
@@ -37,18 +48,18 @@ public class MMLSPagerFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            String uri = UserSingleton.getInstance().getUser().getSubjects()[position].getUri();
+            String uri = UserSingleton.getInstance().getUser().getSubjects().get(position).getUri();
             return MMLSFragment.newInstance(uri, "WOW");
         }
 
         @Override
         public int getCount() {
-            return UserSingleton.getInstance().getUser().getSubjects().length;
+            return UserSingleton.getInstance().getUser().getSubjects().size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return UserSingleton.getInstance().getUser().getSubjects()[position].getName();
+            return UserSingleton.getInstance().getUser().getSubjects().get(position).getName().split("\\(")[0];
         }
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
@@ -78,6 +89,11 @@ public class MMLSPagerFragment extends Fragment {
             Log.e("FRAGMENT", "FRAGMENT IS NULL BOYZ");
         }
 
+    }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        tabLayout.removeAllTabs();
     }
     private String getFragmentTag(int viewPagerId, int fragmentPosition)
     {
