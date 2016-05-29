@@ -72,13 +72,13 @@ public class BulletinFragment extends Fragment {
                         // In case this activity was started with special instructions from an
                         // Intent, pass the Intent's extras to the fragment as arguments
 //                        firstFragment.setArguments(getIntent().getExtras());
-//                        showEditDialog(bulletinPost);
+                        showEditDialog(bulletinPost);
 
                         // Add the fragment to the 'fragment_container' FrameLayout
-                        getActivity().getSupportFragmentManager().beginTransaction()
-                                .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                                .add(R.id.fragment_container, bulletinViewFragment)
-                                .addToBackStack("tag").commit();
+//                        getActivity().getSupportFragmentManager().beginTransaction()
+//                                .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+//                                .add(R.id.fragment_container, bulletinViewFragment)
+//                                .addToBackStack("tag").commit();
                     }
                 });
             }

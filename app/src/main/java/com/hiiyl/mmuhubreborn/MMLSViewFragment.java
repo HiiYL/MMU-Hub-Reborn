@@ -2,6 +2,7 @@ package com.hiiyl.mmuhubreborn;
 
 
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,7 @@ import com.hiiyl.mmuhubreborn.Models.Announcement;
  * Use the {@link MMLSViewFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MMLSViewFragment extends Fragment {
+public class MMLSViewFragment extends DialogFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";

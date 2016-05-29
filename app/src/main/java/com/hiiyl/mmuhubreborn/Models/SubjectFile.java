@@ -10,16 +10,17 @@ import java.io.Serializable;
  * Created by Hii on 26/04/16.
  */
 public class SubjectFile implements Serializable {
-    String content_id;
-    String file_name;
-    String file_path;
     String author;
+    String content_id;
     String content_type;
     String description;
+    String file_name;
+    String file_path;
     long posted_date;
     long priority;
     String title;
     String token;
+
     String uid;
 
     public String getUid() {
@@ -38,7 +39,19 @@ public class SubjectFile implements Serializable {
         return priority;
     }
 
-
+    public SubjectFile(String content_id, String file_name, String file_path, String author, String content_type, String description, long posted_date, long priority, String title, String token, String uid) {
+        this.content_id = content_id;
+        this.file_name = file_name;
+        this.file_path = file_path;
+        this.author = author;
+        this.content_type = content_type;
+        this.description = description;
+        this.posted_date = posted_date;
+        this.priority = priority;
+        this.title = title;
+        this.token = token;
+        this.uid = uid;
+    }
 
     public String getToken() {
         return token;

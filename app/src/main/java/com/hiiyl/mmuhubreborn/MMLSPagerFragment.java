@@ -1,12 +1,12 @@
 package com.hiiyl.mmuhubreborn;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -17,6 +17,7 @@ public class MMLSPagerFragment extends Fragment {
     MyAdapter adapter;
     private ViewPager viewPager;
     private TabLayout tabLayout;
+    private OnFragmentInteractionListener mListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -28,9 +29,10 @@ public class MMLSPagerFragment extends Fragment {
         adapter = new MyAdapter(getChildFragmentManager());
         viewPager.setAdapter(adapter);
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("WOW");
 
-//        getActivity().getActionBar().setDisplayShowTitleEnabled(false);
+        if (mListener != null) {
+            mListener.onFragmentInteraction("Custom Title");
+        }
 
 
         // Give the TabLayout the ViewPager
@@ -98,5 +100,26 @@ public class MMLSPagerFragment extends Fragment {
     private String getFragmentTag(int viewPagerId, int fragmentPosition)
     {
         return "android:switcher:" + viewPagerId + ":" + fragmentPosition;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+
+    public interface OnFragmentInteractionListener {
+        public void onFragmentInteraction(String title);
     }
 }

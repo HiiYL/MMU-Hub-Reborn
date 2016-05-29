@@ -3,6 +3,7 @@ package com.hiiyl.mmuhubreborn;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -71,17 +72,19 @@ public class MMLSFragment extends Fragment {
                     public void onClick(View view) {
                         Log.w("WOW", "You clicked on " + position);
                         // Create a new Fragment to be placed in the activity layout
-                        MMLSViewFragment mmlsViewFragment = MMLSViewFragment.newInstance(announcement);
+//                        MMLSViewFragment mmlsViewFragment = MMLSViewFragment.newInstance(announcement);
+
+                        showEditDialog(announcement);
 
                         // In case this activity was started with special instructions from an
                         // Intent, pass the Intent's extras to the fragment as arguments
 //                        firstFragment.setArguments(getIntent().getExtras());
 
                         // Add the fragment to the 'fragment_container' FrameLayout
-                        getActivity().getSupportFragmentManager().beginTransaction()
-                                .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                                .add(R.id.fragment_container, mmlsViewFragment)
-                                .addToBackStack("tag").commit();
+//                        getActivity().getSupportFragmentManager().beginTransaction()
+//                                .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+//                                .add(R.id.fragment_container, mmlsViewFragment)
+//                                .addToBackStack("tag").commit();
 //                        mAdapter.getRef(position).removeValue();
                     }
                 });
@@ -98,6 +101,13 @@ public class MMLSFragment extends Fragment {
                 .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
                 .add(R.id.fragment_container, downloadFragment)
                 .addToBackStack("tag").commit();
+    }
+
+
+    private void showEditDialog(Announcement announcement) {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        MMLSViewFragment mmlsViewFragment = MMLSViewFragment.newInstance(announcement);
+        mmlsViewFragment.show(fm, "fragment_edit_name");
     }
 
     public static class WeekViewHolder  extends RecyclerView.ViewHolder{

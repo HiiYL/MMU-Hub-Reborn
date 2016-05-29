@@ -6,6 +6,10 @@ package com.hiiyl.mmuhubreborn.Models;
 public class File {
     String content_id;
     String uid;
+    String file_name;
+    String file_path;
+    String content_type;
+    String token;
 
     public String getUid() {
         return uid;
@@ -19,8 +23,7 @@ public class File {
         return content_type;
     }
 
-    String file_name;
-    String file_path;
+
 
     public File(String content_id, String file_name, String file_path, String content_type, String token) {
         this.content_id = content_id;
@@ -30,7 +33,7 @@ public class File {
         this.token = token;
     }
 
-    String content_type;
+
 
     public File() {
     }
@@ -51,7 +54,7 @@ public class File {
         return file_path;
     }
 
-    String token;
+
 
     public File(String content_id, String file_name, String file_path, String token) {
         this.content_id = content_id;

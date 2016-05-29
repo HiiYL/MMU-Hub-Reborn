@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
@@ -23,6 +22,7 @@ import com.hiiyl.mmuhubreborn.Models.Subject;
 import com.hiiyl.mmuhubreborn.Models.SubjectFile;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.ProgressCallback;
 import com.squareup.picasso.Picasso;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -80,7 +80,8 @@ public class DownloadFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mSubjectRef = getArguments().getString(ARG_PARAM1);
-            subjectFilesFirebaseRef = FirebaseDatabase.getInstance().getReference().child(mSubjectRef).child("subject_files");
+            subjectFilesFirebaseRef = FirebaseDatabase.getInstance().getReference().child("subjects3").child(mSubjectRef).child("subject_files");
+            Log.e("SUBJECT STRING", subjectFilesFirebaseRef.toString());
             subjectFilesQuery = subjectFilesFirebaseRef.orderByChild("priority");
 
             boolean found = false;
@@ -107,7 +108,7 @@ public class DownloadFragment extends Fragment {
         RecyclerView recycler = (RecyclerView) root.findViewById(R.id.mmls_recyclerview);
         recycler.setHasFixedSize(true);
         recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mAdapter = new FirebaseRecyclerAdapter<SubjectFile, SubjectFilesViewHolder>(SubjectFile.class, 5, SubjectFilesViewHolder.class, subjectFilesFirebaseRef) {
+        mAdapter = new FirebaseRecyclerAdapter<SubjectFile, SubjectFilesViewHolder>(SubjectFile.class,  R.layout.item_file_download, SubjectFilesViewHolder.class, subjectFilesFirebaseRef) {
             @Override
             protected void populateViewHolder(final SubjectFilesViewHolder subjectFilesViewHolder, final SubjectFile subjectFile, final int position) {
                 subjectFilesViewHolder.titleView.setText(subjectFile.getTitle());
@@ -122,7 +123,7 @@ public class DownloadFragment extends Fragment {
                 subjectFilesViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String file_name = "76175_MOCK MEETING SCHEDULE_TRI3_1516.xls";
+                        String file_name = "78817_Coursework Marks_PWC1010 TRI03_1516_FCI2.txt";
                         String file_directory = getActivity().getExternalFilesDir(null) + "/" + mSubjectName + "/";
                         String file_path = file_directory + file_name;
                         Log.d("FILE NAME", file_name);
@@ -139,23 +140,52 @@ public class DownloadFragment extends Fragment {
                             Log.e("MKDIRS", String.valueOf(temp.mkdirs()));
 
                             Log.d("ION", "STARTING");
-                            Ion.with(getContext())
+                            Ion.with(getActivity())
                                     .load("https://mmls.mmu.edu.my/form-download-content")
-                                    .addHeader("Cookie","laravel_session=eyJpdiI6InZLeWI3RERKQlpIWFVWUDZhXC9lZ09RPT0iLCJ2YWx1ZSI6IlhBYTVNbDlzQnJmMGxiM0drdDlzd1Y1NmZ5ZlJKa1wvR0N3Qk9ZVjdkcWlkSEhRZmZEUFR1NXNsQk5wTlhvSkIzcTZYa1ZiZkdudHlSMnBCVFhhd3N4UT09IiwibWFjIjoiNDUzMWRhZDBiYmZlZGQ5YzBiNjc1OTY5MzZlMWVhMWI5NmExN2RlZDUyYzllYTdmODY1MTcwY2QwMTZiOWMzMyJ9")
-                                    .setBodyParameter("content_id", "76175")
-                                    .setBodyParameter("file_name", "76175_MOCK MEETING SCHEDULE_TRI3_1516.xls")
+                                    .setHeader("Cookie","eyJpdiI6IjlvUVwvZWdwbmxCZmFNMXZKSENIZnd3PT0iLCJ2YWx1ZSI6IjFBWVhtQ004UWR5QXdhNDlXVXI1OVhzT1ZjR0xGcjExd3hmcVJrd0ZTZkRhR2pHdXVuOEUya2NTVko2RlBpVjFzdWFobGxxUWtcL0tpUDh0S1pDSCtnQT09IiwibWFjIjoiZjVkMGEyYTRhYWE5MTE3MGQzMTM2N2Y1NjY0Y2U2MzZhYmY0YWUyMzUyOGYwYjRhNmQwNWI5MWFlOTkyNWU2NCJ9")
+                                    // have a ProgressBar get updated automatically with the percent
+                                    .progressBar(subjectFilesViewHolder.progressBar)
+                                    // and a ProgressDialog
+//                                    .progressDialog(subjectFilesViewHolder.progressDialog)
+                                    // can also use a custom callback
+                                    .progress(new ProgressCallback() {@Override
+                                    public void onProgress(long downloaded, long total) {
+                                        System.out.println("SUP DAWG23 " + downloaded + " bytes / " + total);
+                                    }
+                                    })
+                                    .setBodyParameter("file_name", "78817_Coursework Marks_PWC1010 TRI03_1516_FCI2.pdf")
                                     .setBodyParameter("file_path", "CYBER/PWC1010/announcement")
-                                    .write(file)
+
+                                    .write(new File(file_path))
                                     .setCallback(new FutureCallback<File>() {
                                         @Override
-                                        public void onCompleted(Exception e, File result) {
-                                            if ( e == null) {
-                                                Toast.makeText(getActivity(), "DONE M8", Toast.LENGTH_SHORT).show();
+                                        public void onCompleted(Exception e, File file) {
+                                            if(e == null) {
+                                                Log.d("DOWNLOADING", "DONE DOWNLOADING!");
+                                            }else {
+                                                Log.e("ERROR!", e.getLocalizedMessage());
                                             }
+                                            // download done...
+                                            // do stuff with the File or error
                                         }
                                     });
+//                            Ion.with(getContext())
+//                                    .load("https://mmls.mmu.edu.my/form-download-content")
+//                                    .addHeader("Cookie","laravel_session=eyJpdiI6InZLeWI3RERKQlpIWFVWUDZhXC9lZ09RPT0iLCJ2YWx1ZSI6IlhBYTVNbDlzQnJmMGxiM0drdDlzd1Y1NmZ5ZlJKa1wvR0N3Qk9ZVjdkcWlkSEhRZmZEUFR1NXNsQk5wTlhvSkIzcTZYa1ZiZkdudHlSMnBCVFhhd3N4UT09IiwibWFjIjoiNDUzMWRhZDBiYmZlZGQ5YzBiNjc1OTY5MzZlMWVhMWI5NmExN2RlZDUyYzllYTdmODY1MTcwY2QwMTZiOWMzMyJ9")
+//                                    .setBodyParameter("content_id", "76175")
+//                                    .setBodyParameter("file_name", "76175_MOCK MEETING SCHEDULE_TRI3_1516.xls")
+//                                    .setBodyParameter("file_path", "CYBER/PWC1010/announcement")
+//                                    .write(file)
+//                                    .setCallback(new FutureCallback<File>() {
+//                                        @Override
+//                                        public void onCompleted(Exception e, File result) {
+//                                            if ( e == null) {
+//                                                Toast.makeText(getActivity(), "DONE M8", Toast.LENGTH_SHORT).show();
+//                                            }
+//                                        }
+//                                    });
                         }
-                        Log.w("WOW", "You clicked on " + position);
+//                        Log.w("WOW", "You clicked on " + position);
                     }
                 });
             }

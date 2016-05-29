@@ -3,6 +3,7 @@ package com.hiiyl.mmuhubreborn;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -21,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -34,25 +34,23 @@ import com.hiiyl.mmuhubreborn.Utils.CircleTransform;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, BulletinFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, BulletinFragment.OnFragmentInteractionListener, MMLSPagerFragment.OnFragmentInteractionListener {
 
 
     private static final int RC_SIGN_IN = 97;
     public CoordinatorLayout myView;
     private DrawerLayout drawer;
-    private String studentID;
-    private String mmlsPassword;
 
     private TextView studentNametxtView;
     private TextView facultyTxtView;
     private ImageView profileImageView;
     private FirebaseAuth mAuth;
     private DatabaseReference myFirebaseRef;
-    private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private String TAG = "TAG YOU're IT";
     private User mUser;
     public ActionBar mToolbar;
+    private CollapsingToolbarLayout collapsingToolbarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +63,9 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mToolbar = getSupportActionBar();
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-//        getSupportActionBar().setTitle("Bulletin");
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.htab_collapse_toolbar);
+        collapsingToolbarLayout.setTitle("Bulletin");
 
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
@@ -98,11 +96,9 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
                 if (currentFragment instanceof MMLSPagerFragment) {
                     ((MMLSPagerFragment) currentFragment).onDownloadBtnClicked();
-
                 }
 
             }
@@ -152,33 +148,6 @@ public class MainActivity extends AppCompatActivity
                                     Log.w(TAG, "getUser:onCancelled", databaseError.toException());
                                 }
                             });
-//                    myFirebaseRef.child("users").child(user.getUid()).addValueEventListener(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(DataSnapshot dataSnapshot) {
-//                            mUser = dataSnapshot.getValue(User.class);
-//                            if (mUser == null || mUser.getId() == null) {
-//                                LoginFragment loginFragment = LoginFragment.newInstance(user.getUid());
-//                                getSupportFragmentManager().beginTransaction()
-//                                        .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-//                                        .replace(R.id.fragment_container, loginFragment).commit();
-//                            } else {
-//                                studentNametxtView = (TextView) drawer.findViewById(R.id.student_name);
-//                                studentNametxtView.setText(mUser.getDisplayName());
-//                                facultyTxtView = (TextView) drawer.findViewById(R.id.student_faculty);
-//                                facultyTxtView.setText(mUser.getFaculty());
-//                                profileImageView = (ImageView) drawer.findViewById(R.id.profileImage);
-//                                UserSingleton.getInstance().setUser(mUser);
-//                            }
-//
-//                            // User is signed in
-//                            Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(DatabaseError databaseError) {
-//
-//                        }
-//                    });
                 } else {
                     startActivityForResult(
                             AuthUI.getInstance()
@@ -324,5 +293,11 @@ public class MainActivity extends AppCompatActivity
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+    }
+
+    @Override
+    public void onFragmentInteraction(String title) {
+        collapsingToolbarLayout.setTitle(" ");
+        Log.d("HELLO", "CALLED");
     }
 }
